@@ -20,5 +20,5 @@ import frontend.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('/', include(frontend.urls)),
+    path('', include(frontend.urls)),
 ]
