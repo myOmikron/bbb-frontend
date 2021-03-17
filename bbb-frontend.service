@@ -1,0 +1,13 @@
+[Unit]
+Description=BBB-Chat Sync service
+After=bbb-web.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+ExecStart=/home/bbb-frontend/bbb-frontend/venv/bin/python3 manage.py runserver 127.0.0.1:8004
+User=bbb-frontend
+WorkingDirectory=/home/bbb-frontend/bbb-frontend/bbb_frontend/
+Restart=always
+KillSignal=SIGKILL
