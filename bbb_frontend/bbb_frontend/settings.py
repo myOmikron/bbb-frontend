@@ -128,3 +128,5 @@ STATIC_URL = '/static/'
 # Channels
 ASGI_APPLICATION = "bbb_frontend.asgi.application"
 
+SHARED_SECRET = "change_me"
+SHARED_SECRET_TIME_DELTA = 5
