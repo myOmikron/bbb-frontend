@@ -122,7 +122,7 @@ class JoinView(View):
         except Channel.DoesNotExist:
             return render(
                 request, "info.html",
-                {"info": "Meeting does not exist on this server", "status": "Not found", "code": "404"},
+                {"info": "Channel does not exist on this server", "status": "Not found", "code": "404"},
                 status=404
             )
 
