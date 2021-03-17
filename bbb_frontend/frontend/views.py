@@ -25,7 +25,7 @@ class Validate(View):
 class CloseChannelView(View):
     def post(self, request, *args, **kwargs):
         try:
-            decoded = json.loads(request.POST)
+            decoded = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse(
                 {"success": False, "message": "Unable to parse json"}, status=400
@@ -61,7 +61,7 @@ class CloseChannelView(View):
 class OpenChannelView(View):
     def post(self, request, *args, **kwargs):
         try:
-            decoded = json.loads(request.POST)
+            decoded = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse(
                 {"success": False, "message": "Unable to parse json"}, status=400
