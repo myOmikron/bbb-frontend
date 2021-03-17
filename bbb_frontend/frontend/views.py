@@ -2,13 +2,24 @@ import hashlib
 import json
 import uuid
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic.base import View, TemplateView
 from rc_protocol import validate_checksum
 
 from bbb_frontend import settings
 from frontend.models import Channel
+
+
+class Validate(View):
+    def post(self, request, *args, **kwargs):
+        if "name" not in request.POST:
+            return HttpResponse("Bad Request", status=400)
+        try:
+            channel = Channel.objects.get(streaming_key=request.POST["name"])
+        except Channel.DoesNotExist:
+            return HttpResponse("Not valid", status=404)
+        return HttpResponse("Ok")
 
 
 class CloseChannelView(View):
