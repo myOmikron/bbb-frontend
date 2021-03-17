@@ -11,6 +11,42 @@ from bbb_frontend import settings
 from frontend.models import Channel
 
 
+class CloseChannelView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            decoded = json.loads(request.POST)
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"success": False, "message": "Unable to parse json"}, status=400
+            )
+        if "meeting_id" not in decoded:
+            return JsonResponse(
+                {"success": False, "message": "Missing parameter: meeting_id"}, status=400
+            )
+        if "checksum" not in decoded:
+            return JsonResponse(
+                {"success": False, "message": "Missing parameter: checksum"}, status=400
+            )
+        if not validate_checksum(
+                decoded,
+                salt="closeChannel",
+                shared_secret=settings.SHARED_SECRET,
+                time_delta=settings.SHARED_SECRET_TIME_DELTA
+        ):
+            return JsonResponse(
+                {"success": False, "message": "Checksum check was not successful"}, status=401
+            )
+        try:
+            channel = Channel.objects.get(meeting_id=decoded["meeting_id"])
+            # TODO Close connections to existing users
+            channel.delete()
+        except Channel.DoesNotExist:
+            return JsonResponse(
+                {"success": False, "message": "Channel does not exist"}, status=400
+            )
+        return JsonResponse({"success": True, "message": "Channel was deleted"})
+
+
 class OpenChannelView(View):
     def post(self, request, *args, **kwargs):
         try:
