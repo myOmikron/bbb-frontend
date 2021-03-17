@@ -1,11 +1,52 @@
 import hashlib
+import json
+import uuid
 
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic.base import View, TemplateView
 from rc_protocol import validate_checksum
 
 from bbb_frontend import settings
 from frontend.models import Channel
+
+
+class OpenChannelView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            decoded = json.loads(request.POST)
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"success": False, "message": "Unable to parse json"}, status=400
+            )
+        if "meeting_id" not in decoded:
+            return JsonResponse(
+                {"success": False, "message": "Missing parameter: meeting_id"}, status=400
+            )
+        if "checksum" not in decoded:
+            return JsonResponse(
+                {"success": False, "message": "Missing parameter: checksum"}, status=400
+            )
+        if not validate_checksum(
+                decoded,
+                salt="openChannel",
+                shared_secret=settings.SHARED_SECRET,
+                time_delta=settings.SHARED_SECRET_TIME_DELTA
+        ):
+            return JsonResponse(
+                {"success": False, "message": "Checksum check was not successful"}, status=401
+            )
+        channel, created = Channel.objects.get_or_create(meeting_id=decoded["meeting_id"])
+        if not created:
+            return JsonResponse(
+                {"success": False, "message": "Channel already exists"}, status=304
+            )
+        channel.streaming_key = str(uuid.uuid4())
+        channel.save()
+
+        return JsonResponse(
+            {"success": True, "message": "New Channel was created", "content": {"streaming_key": channel.streaming_key}}
+        )
 
 
 class JoinView(View):
