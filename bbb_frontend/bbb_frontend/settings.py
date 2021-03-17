@@ -124,6 +124,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    "/var/www/html/static",
+]
 
 # Channels
 ASGI_APPLICATION = "bbb_frontend.asgi.application"

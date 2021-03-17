@@ -1,0 +1,21 @@
+body {
+    background-color: #06172A;
+    font-family: 'Source Sans Pro', Arial, sans-serif;
+    color: white;
+    margin: 0;
+}
+
+.centerBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.seperator {
+    display: flex;
+    width: 10%;
+    height: 1px;
+    background-color: white;
+}
