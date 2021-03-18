@@ -19,7 +19,7 @@ class Validate(View):
             channel = Channel.objects.get(streaming_key=request.POST["name"])
         except Channel.DoesNotExist:
             return HttpResponse("Not valid", status=404)
-        return HttpResponse("Ok")
+        return redirect(f"/test")
 
 
 class CloseChannelView(View):
@@ -165,7 +165,7 @@ class WatchView(TemplateView):
         if "session" not in request.GET:
             return render(
                 request, "info.html",
-                {"info": "Missing parameter: meeting_id", "status": "Bad request", "code": "400"},
+                {"info": "Missing parameter: session", "status": "Bad request", "code": "400"},
                 status=400
             )
         user_name = request.session["user_name"]
