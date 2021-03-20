@@ -1,5 +1,6 @@
 class Chat {
     constructor() {
+        this.setupSocket();
     }
 
     setupSocket() {
@@ -43,5 +44,7 @@ class Chat {
     }
 }
 
-const chat = new Chat();
-chat.open();
+export let chat = null;
+document.addEventListener("DOMContentLoaded", () => {
+    chat = new Chat();
+})
