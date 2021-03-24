@@ -1,5 +1,4 @@
 import hashlib
-import json
 import uuid
 
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
@@ -9,6 +8,7 @@ from rc_protocol import validate_checksum
 
 from bbb_frontend import settings
 from frontend.models import Channel
+from bbb_common_api.views import PostApiPoint
 
 
 HttpResponseRedirect.allowed_schemes.append("rtmp")
@@ -25,33 +25,14 @@ class Validate(View):
         return HttpResponseRedirect(f"rtmp://127.0.0.1/hls-live/{channel.meeting_id}", status=302)
 
 
-class CloseChannelView(View):
-    def post(self, request, *args, **kwargs):
+class CloseChannelView(PostApiPoint):
+
+    endpoint = "closeChannel"
+    required_parameters = ["meeting_id"]
+
+    def safe_post(self, request, parameters, *args, **kwargs):
         try:
-            decoded = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse(
-                {"success": False, "message": "Unable to parse json"}, status=400
-            )
-        if "meeting_id" not in decoded:
-            return JsonResponse(
-                {"success": False, "message": "Missing parameter: meeting_id"}, status=400
-            )
-        if "checksum" not in decoded:
-            return JsonResponse(
-                {"success": False, "message": "Missing parameter: checksum"}, status=400
-            )
-        if not validate_checksum(
-                decoded,
-                salt="closeChannel",
-                shared_secret=settings.SHARED_SECRET,
-                time_delta=settings.SHARED_SECRET_TIME_DELTA
-        ):
-            return JsonResponse(
-                {"success": False, "message": "Checksum check was not successful"}, status=401
-            )
-        try:
-            channel = Channel.objects.get(meeting_id=decoded["meeting_id"])
+            channel = Channel.objects.get(meeting_id=parameters["meeting_id"])
             # TODO Close connections to existing users
             channel.delete()
         except Channel.DoesNotExist:
@@ -61,32 +42,13 @@ class CloseChannelView(View):
         return JsonResponse({"success": True, "message": "Channel was deleted"})
 
 
-class OpenChannelView(View):
-    def post(self, request, *args, **kwargs):
-        try:
-            decoded = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse(
-                {"success": False, "message": "Unable to parse json"}, status=400
-            )
-        if "meeting_id" not in decoded:
-            return JsonResponse(
-                {"success": False, "message": "Missing parameter: meeting_id"}, status=400
-            )
-        if "checksum" not in decoded:
-            return JsonResponse(
-                {"success": False, "message": "Missing parameter: checksum"}, status=400
-            )
-        if not validate_checksum(
-                decoded,
-                salt="openChannel",
-                shared_secret=settings.SHARED_SECRET,
-                time_delta=settings.SHARED_SECRET_TIME_DELTA
-        ):
-            return JsonResponse(
-                {"success": False, "message": "Checksum check was not successful"}, status=401
-            )
-        channel, created = Channel.objects.get_or_create(meeting_id=decoded["meeting_id"])
+class OpenChannelView(PostApiPoint):
+
+    endpoint = "openChannel"
+    required_parameters = ["meeting_id"]
+
+    def safe_post(self, request, parameters, *args, **kwargs):
+        channel, created = Channel.objects.get_or_create(meeting_id=parameters["meeting_id"])
         if not created:
             return JsonResponse(
                 {"success": False, "message": "Channel already exists"}, status=304
