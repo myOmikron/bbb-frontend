@@ -2,7 +2,7 @@ import hashlib
 import json
 import uuid
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views.generic.base import View, TemplateView
 from rc_protocol import validate_checksum
@@ -19,7 +19,7 @@ class Validate(View):
             channel = Channel.objects.get(streaming_key=request.POST["name"])
         except Channel.DoesNotExist:
             return HttpResponse("Not valid", status=404)
-        return redirect(channel.meeting_id)
+        return HttpResponseRedirect(channel.meeting_id)
 
 
 class CloseChannelView(View):
