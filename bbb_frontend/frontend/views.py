@@ -1,12 +1,12 @@
 import hashlib
 import uuid
 
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.views.generic.base import View, TemplateView
 from rc_protocol import validate_checksum
 
-from bbb_frontend import settings
 from frontend.models import Channel
 from bbb_common_api.views import PostApiPoint
 
@@ -114,7 +114,7 @@ class JoinView(View):
 class WatchView(TemplateView):
     template_name = "client.html"
 
-    def get(self, request, *args, meeting_id = "", **kwargs):
+    def get(self, request, *args, meeting_id="", **kwargs):
         if "checksum" not in request.session:
             return render(
                 request, "info.html",
@@ -136,4 +136,7 @@ class WatchView(TemplateView):
                 {"info": "You didn't pass the checksum check", "status": "Unauthorized", "code": "401"},
                 status=401
             )
-        return render(request, self.template_name, {"session": meeting_id})
+        return render(request, self.template_name, context={
+            "session": meeting_id,
+            "debug": settings.DEBUG,
+        })

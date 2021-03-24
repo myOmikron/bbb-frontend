@@ -11,7 +11,8 @@
 <body>
     <div class="box">
         <div class="chatContent">
-
+            <textarea id="chatTextarea"></textarea>
+            <button id="chatSendButton"></button>
         </div>
         <div class="streamContent">
             <video id="my-video" class="video-js" controls preload="auto" data-setup='{"fluid": true}'>
@@ -31,5 +32,11 @@
     </div>
 <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-resolution-switcher-vjs7@1.0.0/videojs-resolution-switcher.js"></script>
+
+{% if debug %}
+    <script>let chat; import("{% static 'chat.js' %}").then((module) => { chat = module; });</script>
+{% else %}
+    <script type="module" src="{% static 'chat.js' %}"></script>
+{% endif %}
 </body>
 </html>
