@@ -59,15 +59,14 @@ class Chat {
     }
 }
 
+function onReady(callbackFunction){
+  if(document.readyState !== 'loading')
+    callbackFunction()
+  else
+    document.addEventListener("DOMContentLoaded", callbackFunction)
+}
 
-let instance = null;
-try {
+export let instance = null;
+onReady(() => {
     instance = new Chat();
-} catch {
-    document.addEventListener("DOMContentLoaded", () => {
-        instance = new Chat();
-    })
-}
-export function getChat() {
-    return instance;
-}
+});
