@@ -11,6 +11,9 @@ from bbb_frontend import settings
 from frontend.models import Channel
 
 
+HttpResponseRedirect.allowed_schemes.append("rtmp")
+
+
 class Validate(View):
     def post(self, request, *args, **kwargs):
         if "name" not in request.POST:
