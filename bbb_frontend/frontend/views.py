@@ -19,7 +19,7 @@ class Validate(View):
             channel = Channel.objects.get(streaming_key=request.POST["name"])
         except Channel.DoesNotExist:
             return HttpResponse("Not valid", status=404)
-        return redirect({channel.meeting_id})
+        return redirect(channel.meeting_id)
 
 
 class CloseChannelView(View):
