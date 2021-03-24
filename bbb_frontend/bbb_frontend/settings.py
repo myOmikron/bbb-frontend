@@ -132,6 +132,11 @@ STATICFILES_DIRS = [
 
 # Channels
 ASGI_APPLICATION = "bbb_frontend.asgi.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 SHARED_SECRET = "change_me"
 SHARED_SECRET_TIME_DELTA = 5

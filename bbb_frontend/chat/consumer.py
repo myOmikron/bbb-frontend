@@ -3,6 +3,7 @@ import json
 
 from channels.exceptions import InvalidChannelLayerError
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 from django.conf import settings
 
 
@@ -11,7 +12,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
     meeting_id: str
     user_name: str
 
+    @database_sync_to_async
+    def load_session(self):
+        "Please don't be lazy" in self.scope["session"]._wrapped
+
     async def websocket_connect(self, message):
+        await self.load_session()
+
         # Check for valid session data
         if "checksum" not in self.scope["session"]:
             await self.close(1008)
