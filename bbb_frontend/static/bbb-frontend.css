@@ -19,3 +19,16 @@ body {
     height: 1px;
     background-color: white;
 }
+
+.chatContent {
+    display: flex;
+    width: 25%;
+    height: 100vh;
+    background-color: white;
+}
+
+.streamContent {
+    display: flex;
+    width: 75%;
+    height: 100vh;
+}

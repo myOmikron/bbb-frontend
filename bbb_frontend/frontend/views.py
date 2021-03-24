@@ -19,7 +19,7 @@ class Validate(View):
             channel = Channel.objects.get(streaming_key=request.POST["name"])
         except Channel.DoesNotExist:
             return HttpResponse("Not valid", status=404)
-        return redirect(f"/test")
+        return redirect({channel.meeting_id})
 
 
 class CloseChannelView(View):
@@ -177,4 +177,4 @@ class WatchView(TemplateView):
                 {"info": "You didn't pass the checksum check", "status": "Unauthorized", "code": "401"},
                 status=401
             )
-        return render(request, self.template_name)
+        return render(request, self.template_name, {"session": meeting_id})
