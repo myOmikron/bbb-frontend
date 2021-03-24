@@ -1,12 +1,28 @@
 class Chat {
     constructor() {
+        this.textarea = document.getElementById("chatTextarea")
+        this.button = document.getElementById("chatSendButton")
+        if (!this.textarea) {
+            console.error("Couldn't find chat's textarea")
+        }
+        if (!this.button) {
+            console.error("Couldn't find chat's send button")
+        }
+        if ((!this.button) && (!this.textarea)) {
+            throw Error("Missing DOM elements! See previous logs!");
+        }
+        this.button.onclick = (event) => {
+            this.sendMessage(this.textarea.value);
+            this.textarea.value = "";
+        }
         this.setupSocket();
-    }
+    };
+
 
     setupSocket() {
         const url = window.location;
         const protocol = url.protocol.replace("http", "ws");
-        const meeting_id = new URLSearchParams(url.search).get("meeting_id");
+        const meeting_id = new URLSearchParams(url.search).get("session");
 
         this.socket = new WebSocket(`${protocol}//${url.host}/watch/${meeting_id}`);
 
@@ -44,7 +60,15 @@ class Chat {
     }
 }
 
-export let chat = null;
-document.addEventListener("DOMContentLoaded", () => {
-    chat = new Chat();
-})
+
+let instance = null;
+try {
+    instance = new Chat();
+} catch {
+    document.addEventListener("DOMContentLoaded", () => {
+        instance = new Chat();
+    })
+}
+export function getChat() {
+    return instance;
+}
