@@ -22,9 +22,8 @@ class Chat {
     setupSocket() {
         const url = window.location;
         const protocol = url.protocol.replace("http", "ws");
-        const meeting_id = new URLSearchParams(url.search).get("session");
 
-        this.socket = new WebSocket(`${protocol}//${url.host}/watch/${meeting_id}`);
+        this.socket = new WebSocket(protocol+"//"+url.host+url.pathname);
 
         this.socket.onopen = () => {
         };

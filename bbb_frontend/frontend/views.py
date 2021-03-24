@@ -143,13 +143,13 @@ class JoinView(View):
             f"{user_name}{meeting_id}{settings.SHARED_SECRET}".encode("utf-8")
         ).hexdigest()
         request.session["user_name"] = request.GET["user_name"]
-        return redirect(f"/watch?session={request.GET['meeting_id']}")
+        return redirect(f"/watch/{request.GET['meeting_id']}")
 
 
 class WatchView(TemplateView):
     template_name = "client.html"
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, meeting_id = "", **kwargs):
         if "checksum" not in request.session:
             return render(
                 request, "info.html",
@@ -162,14 +162,8 @@ class WatchView(TemplateView):
                 {"info": "Missing parameter: user_name", "status": "Bad request", "code": "400"},
                 status=400
             )
-        if "session" not in request.GET:
-            return render(
-                request, "info.html",
-                {"info": "Missing parameter: session", "status": "Bad request", "code": "400"},
-                status=400
-            )
+
         user_name = request.session["user_name"]
-        meeting_id = request.GET["session"]
         tmp_checksum = hashlib.sha512(f"{user_name}{meeting_id}{settings.SHARED_SECRET}".encode("utf-8")).hexdigest()
         if request.session["checksum"] != tmp_checksum:
             return render(
