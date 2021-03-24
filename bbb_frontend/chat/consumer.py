@@ -1,10 +1,17 @@
 import hashlib
 import json
+import logging
+import os
 
+from channels.consumer import SyncConsumer
 from channels.exceptions import InvalidChannelLayerError
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.conf import settings
+from rc_protocol import get_checksum
+import requests
+
+from chat.models import Chat
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -60,9 +67,37 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if data["type"] == "chat.message":
             data["user_name"] = self.user_name
+            await self.channel_layer.send("chatCallback", {"chat_id": self.meeting_id, **data})
             await self.channel_layer.group_send(self.meeting_id, data)
         else:
             raise ValueError(f"Incoming WebSocket json object is of unknown type: '{data['type']}'")
 
     async def chat_message(self, message):
         await self.send(text_data=json.dumps(message))
+
+
+class ChatCallbackConsumer(SyncConsumer):
+
+    logger = logging.getLogger(f"{__name__}.callback")
+
+    def chat_message(self, message):
+        self.logger.debug(f"Received chat message: {message}")
+
+        try:
+            chat = Chat.objects.get(channel__meeting_id=message["chat_id"])
+        except Chat.DoesNotExist:
+            self.logger.debug("Skipping because the channel doesn't have a running chat bridge")
+            return
+
+        if not chat.callback_uri:
+            self.logger.debug("Skipping because the chat bridge has no registered callback")
+            return
+
+        params = {
+            "chat_id": chat.callback_id,
+            "user_name": message["user_name"],
+            "message": message["message"],
+        }
+        params["checksum"] = get_checksum(params, chat.callback_secret, "sendMessage")
+
+        requests.post(os.path.join(chat.callback_uri, "sendMessage"), json=params)
