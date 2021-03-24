@@ -6,6 +6,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'bbb-frontend.css' %}">
     <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/videojs-resolution-switcher-vjs7@1.0.0/videojs-resolution-switcher.css">
 </head>
 <body>
     <div class="box">
@@ -14,14 +15,21 @@
         </div>
         <div class="streamContent">
             <video id="my-video" class="video-js" controls preload="auto" data-setup='{"fluid": true}'>
-                <source src="/hls/{{ session }}.m3u8" type="application/vnd.apple.mpegurl">
+                <source src="/hls/{{ session }}_360.m3u8" type="application/vnd.apple.mpegurl" label="360" res="360">
+                <source src="/hls/{{ session }}_480.m3u8" type="application/vnd.apple.mpegurl" label="480" res="480">
+                <source src="/hls/{{ session }}_720.m3u8" type="application/vnd.apple.mpegurl" label="720" res="720">
+                <source src="/hls/{{ session }}_1080.m3u8" type="application/vnd.apple.mpegurl" label="1080" res="1080">
                 <p class="vjs-no-js">
                     To view this video please enable JavaScript, and consider upgrading to a web browser that
                     <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
                 </p>
              </video>
+            <script>
+                videojs('my-video').videoJsResolutionSwitcher();
+            </script>
         </div>
     </div>
 <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-resolution-switcher-vjs7@1.0.0/videojs-resolution-switcher.js"></script>
 </body>
 </html>
