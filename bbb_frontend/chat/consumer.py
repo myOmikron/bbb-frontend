@@ -25,14 +25,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def load_session(self):
-        "Please don't be lazy" in self.scope["session"]._wrapped
-
-    @database_sync_to_async
-    def get_chat(self):
-        try:
-            return Chat.objects.get(self.meeting_id)
-        except Chat.DoesNotExist:
-            return None
+        "Please don't be lazy" in self.scope["session"]
 
     async def websocket_connect(self, message):
         # Check for valid session data
@@ -80,7 +73,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # await self.channel_layer.send("chatCallback", {"chat_id": self.meeting_id, **data})
             await self.channel_layer.group_send(self.meeting_id, data)
 
-            chat = await self.get_chat()
+            chat = await Chat.objects.aget(self.meeting_id)
             if chat:
                 params = {
                     "chat_id": self.meeting_id,

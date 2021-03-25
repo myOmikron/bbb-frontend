@@ -1,4 +1,5 @@
 from django.db import models
+from channels.db import database_sync_to_async
 
 from frontend.models import Channel
 
@@ -9,6 +10,19 @@ class CachedManager(models.Manager):
         super().__init__()
         self.field = field_name
         self.cache = {}
+
+    async def aget(self, value, **kwargs):
+        if value is None:
+            return await database_sync_to_async(super().get)(**kwargs)
+        elif value not in self.cache:
+            self.cache[value] = await database_sync_to_async(super().get)((self.field, value))
+            return self.cache[value]
+        else:
+            if self.cache[value].id is None:
+                del self.cache[value]
+                raise self.model.DoesNotExist
+            else:
+                return self.cache[value]
 
     def get(self, value=None, **kwargs):
         if value is None:
