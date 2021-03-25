@@ -6,6 +6,7 @@ from frontend.models import Channel
 class CachedManager(models.Manager):
 
     def __init__(self, field_name):
+        super().__init__()
         self.field = field_name
         self.cache = {}
 
