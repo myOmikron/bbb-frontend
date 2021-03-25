@@ -35,10 +35,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return None
 
     async def websocket_connect(self, message):
-        # Store relevant data
-        self.user_name = self.scope["session"]["user_name"]
-        self.meeting_id = self.scope["url_route"]["kwargs"]["meeting_id"]
-
         # Check for valid session data
         await self.load_session()
         if "checksum" not in self.scope["session"]:
@@ -47,6 +43,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if "user_name" not in self.scope["session"]:
             await self.close(1008)
             return
+
+        # Store relevant data
+        self.user_name = self.scope["session"]["user_name"]
+        self.meeting_id = self.scope["url_route"]["kwargs"]["meeting_id"]
 
         # Check checksum
         tmp_checksum = hashlib.sha512(
