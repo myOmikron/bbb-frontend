@@ -84,7 +84,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 before = time()
                 async with httpx.AsyncClient() as client:
-                    await client.post(chat.callback_uri.rstrip("/") + "sendMessage", json=params)
+                    await client.post(chat.callback_uri.rstrip("/") + "/sendMessage", json=params)
                 self.logger.debug(f"Took {time() - before:.3f}ms to send request")
         else:
             raise ValueError(f"Incoming WebSocket json object is of unknown type: '{data['type']}'")
