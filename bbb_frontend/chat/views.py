@@ -79,7 +79,7 @@ class EndChat(PostApiPoint):
 
     def safe_post(self, request, parameters, *args, **kwargs):
         try:
-            Chat.objects.get(channel__meeting_id=parameters["chat_id"]).delete()
+            Chat.objects.get(parameters["chat_id"]).delete()
             return JsonResponse(
                 {"success": True, "message": "Chat has ended successfully"}
             )
@@ -97,7 +97,7 @@ class SendMessage(PostApiPoint):
 
     def safe_post(self, request, parameters, *args, **kwargs):
         try:
-            chat = Chat.objects.get(channel__meeting_id=parameters["chat_id"])
+            chat = Chat.objects.get(parameters["chat_id"])
         except Chat.DoesNotExist:
             return JsonResponse(
                 {"success": False, "message": "No chat was found."},
