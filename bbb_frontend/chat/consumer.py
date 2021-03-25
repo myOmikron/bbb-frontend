@@ -84,7 +84,7 @@ class ChatCallbackConsumer(SyncConsumer):
         self.logger.debug(f"Received chat message: {message}")
 
         try:
-            chat = Chat.objects.get(channel__meeting_id=message["chat_id"])
+            chat = Chat.objects.get(message["chat_id"])
         except Chat.DoesNotExist:
             self.logger.debug("Skipping because the channel doesn't have a running chat bridge")
             return
