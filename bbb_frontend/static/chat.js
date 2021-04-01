@@ -1,5 +1,21 @@
+const TEMPLATE = "" +
+    "<div class='message'>" +
+    "    <div class='messageColor' style='background-color: $COLOR;'>$ID</div>" +
+    "    <div class='messageContent'>" +
+    "        <h3>$USER</h3>" +
+    "        $MESSAGE" +
+    "    </div>" +
+    "</div>";
+
+const parser = document.createElement("div");
+function parse(html) {
+    parser.innerHTML = html;
+    return parser.firstChild;
+}
+
 class Chat {
     constructor() {
+        this.messages = document.getElementsByClassName("messageChatContent")[0];
         this.textarea = document.getElementById("chatTextarea")
         this.button = document.getElementById("chatSendButton")
         if (!this.textarea) {
@@ -54,8 +70,13 @@ class Chat {
     }
 
     onMessage({type, user_name, message}) {
-        // TODO
-        console.log("" + user_name + " wrote:\n" + message)
+        this.messages.appendChild(parse(
+            TEMPLATE
+            .replace("$COLOR", "#00F")
+            .replace("$ID", user_name.slice(0, 2))
+            .replace("$USER", user_name)
+            .replace("$MESSAGE", message)
+        ));
     }
 }
 
