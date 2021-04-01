@@ -31,6 +31,12 @@ class Chat {
             this.sendMessage(this.textarea.value);
             this.textarea.value = "";
         }
+        this.textarea.onkeypress = (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                this.button.click();
+            }
+        };
         this.setupSocket();
     };
 
