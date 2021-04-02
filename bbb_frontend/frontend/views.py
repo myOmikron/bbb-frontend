@@ -54,6 +54,8 @@ class OpenChannelView(PostApiPoint):
                 {"success": False, "message": "Channel already exists"}, status=304
             )
         channel.streaming_key = str(uuid.uuid4())
+        if "welcome_msg" in parameters:
+            channel.welcome_msg = parameters["welcome_msg"]
         channel.save()
 
         return JsonResponse(
@@ -136,7 +138,16 @@ class WatchView(TemplateView):
                 {"info": "You didn't pass the checksum check", "status": "Unauthorized", "code": "401"},
                 status=401
             )
+        try:
+            welcome_msg = Channel.objects.get(meeting_id=meeting_id).welcome_msg
+        except Channel.DoesNotExist:
+            return render(
+                request, "info.html",
+                {"info": "Channel does not exist!", "status": "Bad request", "code": "400"},
+                status=400
+            )
         return render(request, self.template_name, context={
             "session": meeting_id,
             "debug": settings.DEBUG,
+            "welcome_msg": welcome_msg,
         })

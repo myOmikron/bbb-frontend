@@ -27,9 +27,10 @@ The data has to be a valid json object.
 
 - Method `POST`
 
-Parameter  | Description
-:---:      | :---:
-meeting_id | The meeting_id of a bbb meeting
+Parameter   | Required | Description
+:---:       | :---:    | :---:
+meeting_id  | Yes      | The meeting_id of a bbb meeting
+welcome_msg | No       | The message that should be displayed above the chat. HTML is allowed.
 
 Returns a json on success:
 ```json
