@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="streamContent">
-            <video id="my-video" class="video-js" controls preload="auto" data-setup='{"fluid": true}'>
+            <video id="my-video" class="video-js vjs-big-play-centered">
                 <!--<source src="/hls/{{ session }}_480.m3u8" type="application/vnd.apple.mpegurl" label="480" res="480">
                 <source src="/hls/{{ session }}_720.m3u8" type="application/vnd.apple.mpegurl" label="720" res="720">
 		<source src="/hls/{{ session }}_src.m3u8" type="application/vnd.apple.mpegurl" label="1080" res="1080">-->
@@ -35,7 +35,15 @@
                 </p>
              </video>
             <script>
-                videojs('my-video')//.videoJsResolutionSwitcher();
+                const player = videojs('my-video', {
+                    fluid: true,
+                    autoplay: "play",
+                    preload: "auto",
+                    controls: true,
+                    liveui: true,
+                    inactivityTimeout: 0,
+                    poster: "{% static 'img/thumbnail.png' %}"
+                });
             </script>
         </div>
     </div>
