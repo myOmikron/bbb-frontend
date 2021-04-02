@@ -25,6 +25,7 @@ body {
     flex-direction: column;
     width: 350px;
     min-width: 350px;
+    margin-right: 1px;
     height: auto;
     background-color: white;
 }
