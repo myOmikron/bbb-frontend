@@ -1,6 +1,8 @@
 import hashlib
 import uuid
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -11,6 +13,7 @@ from frontend.models import Channel
 from bbb_common_api.views import PostApiPoint
 
 
+channel_layer = get_channel_layer()
 HttpResponseRedirect.allowed_schemes.append("rtmp")
 
 
@@ -33,7 +36,11 @@ class CloseChannelView(PostApiPoint):
     def safe_post(self, request, parameters, *args, **kwargs):
         try:
             channel = Channel.objects.get(meeting_id=parameters["meeting_id"])
-            # TODO Close connections to existing users
+            if channel.chat:
+                async_to_sync(channel_layer.group_send)(channel.meeting_id, {
+                    "type": "chat.redirect",
+                    "url": channel.redirect_url
+                })
             channel.delete()
         except Channel.DoesNotExist:
             return JsonResponse(
@@ -56,6 +63,8 @@ class OpenChannelView(PostApiPoint):
         channel.streaming_key = str(uuid.uuid4())
         if "welcome_msg" in parameters:
             channel.welcome_msg = parameters["welcome_msg"]
+        if "redirect_url" in parameters:
+            channel.redirect_url = parameters["redirect_url"]
         channel.save()
 
         return JsonResponse(

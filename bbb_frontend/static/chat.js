@@ -54,6 +54,8 @@ class Chat {
             const data = JSON.parse(event.data);
             if (data.type === "chat.message") {
                 this.onMessage(data);
+            } else if (data.type === "chat.redirect") {
+                this.onRedirect(data);
             } else {
                 console.error(`Incoming WebSocket json object is of unknown type: '${data.type}'`);
             }
@@ -73,6 +75,10 @@ class Chat {
             type: "chat.message",
             message,
         }))
+    }
+
+    onRedirect({type, url}) {
+        window.location = url;
     }
 
     onMessage({type, user_name, message}) {
