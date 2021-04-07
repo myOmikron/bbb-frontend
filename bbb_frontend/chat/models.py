@@ -45,7 +45,7 @@ class Chat(models.Model):
     callback_secret = models.CharField(max_length=255, default="")
     callback_id = models.CharField(max_length=255, default="")
 
-    objects = CachedManager("channel__meeting_id")
+    # objects = CachedManager("channel__meeting_id")
 
     def __str__(self):
         return self.channel.meeting_id
