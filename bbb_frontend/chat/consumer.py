@@ -20,6 +20,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     meeting_id: str
     user_name: str
+    chat: Chat
 
     logger = logging.getLogger(f"{__name__}.ChatConsumer")
 
@@ -62,6 +63,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Accept connection
         await self.accept()
 
+        try:
+            self.chat = await database_sync_to_async(Chat.objects.get)(meeting_id=self.meeting_id)
+        except Chat.DoesNotExist:
+            self.chat = None
+
     async def receive(self, text_data=None, bytes_data=None):
         if text_data:
             data = json.loads(text_data)
@@ -73,18 +79,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # await self.channel_layer.send("chatCallback", {"chat_id": self.meeting_id, **data})
             await self.channel_layer.group_send(self.meeting_id, data)
 
-            chat = await Chat.objects.aget(self.meeting_id)
-            if chat:
+            if self.chat:
                 params = {
                     "chat_id": self.meeting_id,
                     "user_name": self.user_name,
                     "message": data["message"]
                 }
-                params["checksum"] = get_checksum(params, chat.callback_secret, "sendMessage")
+                params["checksum"] = get_checksum(params, self.chat.callback_secret, "sendMessage")
 
                 before = time()
                 async with httpx.AsyncClient() as client:
-                    await client.post(chat.callback_uri.rstrip("/") + "/sendMessage", json=params)
+                    await client.post(self.chat.callback_uri.rstrip("/") + "/sendMessage", json=params)
                 self.logger.debug(f"Took {time() - before:.3f}ms to send request")
         else:
             raise ValueError(f"Incoming WebSocket json object is of unknown type: '{data['type']}'")
@@ -94,6 +99,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_redirect(self, message):
         await self.send(text_data=json.dumps(message))
+
+    async def update_db(self, message):
+        if message["chat"] is None:
+            self.chat = None
+        else:
+            if self.chat is None:
+                self.chat = Chat(**message["chat"])
+            else:
+                self.chat.__dict__.update(message["chat"])
 
 
 class ChatCallbackConsumer(SyncConsumer):
