@@ -64,7 +64,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         try:
-            self.chat = await database_sync_to_async(Chat.objects.get)(meeting_id=self.meeting_id)
+            self.chat = await database_sync_to_async(Chat.objects.get)(channel__meeting_id=self.meeting_id)
         except Chat.DoesNotExist:
             self.chat = None
 
