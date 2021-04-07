@@ -6,11 +6,9 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'bbb-frontend.css' %}">
     <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/videojs-resolution-switcher-vjs7@1.0.0/videojs-resolution-switcher.css">
 </head>
 <body>
 <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-resolution-switcher-vjs7@1.0.0/videojs-resolution-switcher.js"></script>
     <div class="box">
         <div class="chatContent">
             <div class="staticChatContent">
@@ -25,9 +23,6 @@
         </div>
         <div class="streamContent">
             <video id="my-video" class="video-js vjs-big-play-centered">
-                <!--<source src="/hls/{{ session }}_480.m3u8" type="application/vnd.apple.mpegurl" label="480" res="480">
-                <source src="/hls/{{ session }}_720.m3u8" type="application/vnd.apple.mpegurl" label="720" res="720">
-		<source src="/hls/{{ session }}_src.m3u8" type="application/vnd.apple.mpegurl" label="1080" res="1080">-->
                 <source src="/hls/{{ session }}.m3u8" type="application/vnd.apple.mpegurl">
                 <p class="vjs-no-js">
                     To view this video please enable JavaScript, and consider upgrading to a web browser that
