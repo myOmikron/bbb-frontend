@@ -6,4 +6,5 @@ class ChatConfig(AppConfig):
 
     def ready(self):
         super().ready()
-        import chat.signals
+        from chat.models import Chat
+        Chat.objects.register_signals()
