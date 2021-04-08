@@ -185,3 +185,7 @@ body {
     padding-top: 100vh;
     background-color: #06172A;
 }
+
+.vjs-poster {
+    background-color: #06172A;
+}
