@@ -30,23 +30,23 @@ class CachedManager(models.Manager):
                 self.cache[value] = None
             return self.cache[value]
 
-    def on_object_save(self, sender, **kwargs):
-        value = sender
+    def on_object_save(self, instance, **kwargs):
+        value = instance
         for attr in self.field.split("__"):
             value = getattr(value, attr)
 
-        self.cache[value] = sender
+        self.cache[value] = instance
 
-    def on_object_delete(self, sender, **kwargs):
-        value = sender
+    def on_object_delete(self, instance, **kwargs):
+        value = instance
         for attr in self.field.split("__"):
             value = getattr(value, attr)
 
         self.cache[value] = None
 
     def register_signals(self):
-        post_save.connect(self.on_object_save, sender=Chat, dispatch_uid="on_chat_save")
-        pre_delete.connect(self.on_object_delete, sender=Chat, dispatch_uid="on_chat_delete")
+        post_save.connect(self.on_object_save, sender=self.model, dispatch_uid="on_chat_save")
+        pre_delete.connect(self.on_object_delete, sender=self.model, dispatch_uid="on_chat_delete")
 
 
 class Chat(models.Model):
