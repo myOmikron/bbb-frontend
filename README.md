@@ -27,10 +27,11 @@ The data has to be a valid json object.
 
 - Method `POST`
 
-Parameter   | Required | Description
-:---:       | :---:    | :---:
-meeting_id  | Yes      | The meeting_id of a bbb meeting
-welcome_msg | No       | The message that should be displayed above the chat. HTML is allowed.
+Parameter    | Required | Description
+:---:        | :---:    | :---:
+meeting_id   | Yes      | The meeting_id of a bbb meeting
+welcome_msg  | No       | The message that should be displayed above the chat. HTML is allowed.
+redirect_url | No       | An url to redirect the users to, once the stream ended.
 
 Returns a json on success:
 ```json
