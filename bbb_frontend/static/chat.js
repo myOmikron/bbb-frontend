@@ -38,6 +38,11 @@ class Chat {
             }
         };
         this.setupSocket();
+        this.updateInterval = setInterval(() => {
+            this.socket.send(JSON.stringify({
+                type: "chat.update"
+            }));
+        }, 1000);
     };
 
 
@@ -56,6 +61,8 @@ class Chat {
                 this.onMessage(data);
             } else if (data.type === "chat.redirect") {
                 this.onRedirect(data);
+            } else if (data.type === "chat.update") {
+                this.onUpdate(data)
             } else {
                 console.error(`Incoming WebSocket json object is of unknown type: '${data.type}'`);
             }
@@ -75,6 +82,10 @@ class Chat {
             type: "chat.message",
             message,
         }))
+    }
+
+    onUpdate({type, viewers}) {
+        console.log("Viewers: ", viewers)
     }
 
     onRedirect({type, url}) {

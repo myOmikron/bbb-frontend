@@ -9,11 +9,13 @@ from channels.exceptions import InvalidChannelLayerError
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.conf import settings
+from django.db.models import F
 from rc_protocol import get_checksum
 import requests
 import httpx
 
 from chat.models import Chat
+from frontend.models import Channel
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -62,6 +64,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Accept connection
         await self.accept()
 
+        # Increment the viewer count by 1
+        await database_sync_to_async(Channel.objects.filter(meeting_id=self.meeting_id).update)(viewers=F("viewers")+1)
+
+    async def disconnect(self, code):
+        # Decrement the viewer count by 1
+        await database_sync_to_async(Channel.objects.filter(meeting_id=self.meeting_id).update)(viewers=F("viewers")-1)
+
     async def receive(self, text_data=None, bytes_data=None):
         if text_data:
             data = json.loads(text_data)
@@ -86,6 +95,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 async with httpx.AsyncClient() as client:
                     await client.post(chat.callback_uri.rstrip("/") + "/sendMessage", json=params)
                 self.logger.debug(f"Took {time() - before:.3f}ms to send request")
+        elif data["type"] == "chat.update":
+            channel = await database_sync_to_async(Channel.objects.get)(meeting_id=self.meeting_id)
+            await self.send(text_data=json.dumps({
+                "type": "chat.update",
+                "viewers": channel.viewers
+            }))
         else:
             raise ValueError(f"Incoming WebSocket json object is of unknown type: '{data['type']}'")
 

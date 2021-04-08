@@ -7,3 +7,4 @@ class Channel(models.Model):
     streaming_key = CharField(default="", max_length=255)
     welcome_msg = CharField(default="", max_length=1024)
     redirect_url = CharField(default="/", max_length=255)
+    viewers = models.IntegerField(default=0)
