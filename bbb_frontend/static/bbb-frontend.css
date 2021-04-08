@@ -44,6 +44,11 @@ body {
     color: black;
 }
 
+.viewerCountContent {
+    margin-left: 0.75em;
+    color: black;
+}
+
 .messageChatContent {
     display: flex;
     flex-direction: column;

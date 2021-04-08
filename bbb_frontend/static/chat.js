@@ -15,6 +15,7 @@ function parse(html) {
 
 class Chat {
     constructor() {
+        this.viewers = document.getElementById("viewers");
         this.messages = document.getElementsByClassName("messageChatContent")[0];
         this.textarea = document.getElementById("chatTextarea")
         this.button = document.getElementById("chatSendButton")
@@ -85,7 +86,7 @@ class Chat {
     }
 
     onUpdate({type, viewers}) {
-        console.log("Viewers: ", viewers)
+        this.viewers.innerHTML = "" + viewers;
     }
 
     onRedirect({type, url}) {
