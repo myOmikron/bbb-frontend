@@ -62,6 +62,8 @@ class OpenChannelView(PostApiPoint):
         channel.streaming_key = str(uuid.uuid4())
         if "welcome_msg" in parameters:
             channel.welcome_msg = parameters["welcome_msg"]
+        else:
+            channel.welcome_msg = f"Welcome to {channel.meeting_id}!"
         if "redirect_url" in parameters:
             channel.redirect_url = parameters["redirect_url"]
         channel.save()
