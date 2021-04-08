@@ -2,15 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{{ title }}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'bbb-frontend.css' %}">
     <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
+    <script type="application/javascript" src="{% static 'responsive.js' %}"></script>
 </head>
 <body>
 <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
     <div class="box">
-        <div class="chatContent">
+        <div class="chatContent" id="chat">
             <div class="staticChatContent">
                 {{ welcome_msg }}
             </div>
@@ -20,6 +22,11 @@
                 <label><textarea id="chatTextarea" rows="1"></textarea></label>
                 <button id="chatSendButton"><img src="{% static 'img/send.svg' %}" alt="Send message"></button>
             </div>
+        </div>
+        <div class="chatToggle">
+            <button onclick="toggleChat();" id="toggleButton">
+                <img src="{% static 'img/chat.svg' %}" alt="Toggle Chat">
+            </button>
         </div>
         <div class="streamContent">
             <video id="my-video" class="video-js vjs-big-play-centered">
