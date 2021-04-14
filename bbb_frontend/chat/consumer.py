@@ -36,19 +36,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Store relevant data
-        self.user_name = self.scope["session"]["user_name"]
-        self.meeting_id = self.scope["url_route"]["kwargs"]["meeting_id"]
+        user_name = self.scope["session"]["user_name"]
+        meeting_id = self.scope["url_route"]["kwargs"]["meeting_id"]
 
         # Check checksum
         tmp_checksum = hashlib.sha512(
-            f"{self.user_name}{self.meeting_id}{settings.SHARED_SECRET}".encode("utf-8")
+            f"{user_name}{meeting_id}{settings.SHARED_SECRET}".encode("utf-8")
         ).hexdigest()
         if self.scope["session"]["checksum"] != tmp_checksum:
             await self.close(1008)
             return
 
         # Setup channel group
-        self.groups.append(self.meeting_id)
+        self.groups.append(meeting_id)
         try:
             for group in self.groups:
                 await self.channel_layer.group_add(group, self.channel_name)
@@ -63,9 +63,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Increment the viewer count by 1
         await viewers[self.meeting_id].increment()
 
-    async def disconnect(self, code):
-        # Decrement the viewer count by 1
-        await viewers[self.meeting_id].decrement()
+        # Save meeting and user
+        # => When these aren't set, this method didn't terminate correctly and the counter wasn't incremented
+        self.meeting_id = meeting_id
+        self.user_name = user_name
+
+    def __del__(self):
+        # Check if consumer has finished connecting
+        if hasattr(self, "meeting_id"):
+            # Decrement the viewer count by 1
+            viewers[self.meeting_id].decrement()
 
     async def receive(self, text_data=None, bytes_data=None):
         if text_data:
