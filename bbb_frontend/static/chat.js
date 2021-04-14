@@ -2,9 +2,9 @@
 
 function onReady(callbackFunction){
     if(document.readyState !== 'loading')
-        callbackFunction()
+        callbackFunction();
     else
-        document.addEventListener("DOMContentLoaded", callbackFunction)
+        document.addEventListener("DOMContentLoaded", callbackFunction);
 }
 
 onReady(function() {
@@ -26,15 +26,15 @@ onReady(function() {
     }
 
     function setupSocket() {
-        const url = window.location;
-        const protocol = url.protocol.replace("http", "ws");
+        var url = window.location;
+        var protocol = url.protocol.replace("http", "ws");
 
         socket = new WebSocket(protocol+"//"+url.host+url.pathname);
 
         socket.onopen = function() {};
 
         socket.onmessage = function(event) {
-            const data = JSON.parse(event.data);
+            var data = JSON.parse(event.data);
             if (data.type === "chat.message") {
                 onMessage(data);
             } else if (data.type === "chat.redirect") {
@@ -44,7 +44,7 @@ onReady(function() {
             } else if (data.type === "chat.reload") {
                 onReload(data);
             } else {
-                console.error(`Incoming WebSocket json object is of unknown type: '${data.type}'`);
+                console.error("Incoming WebSocket json object is of unknown type: '"+data.type+"'");
             }
         };
 
@@ -60,8 +60,8 @@ onReady(function() {
     function sendMessage(message) {
         socket.send(JSON.stringify({
             type: "chat.message",
-            message,
-        }))
+            message: message,
+        }));
     }
 
     function onReload(obj) {
@@ -92,10 +92,10 @@ onReady(function() {
     var button = document.getElementById("chatSendButton");
 
     if (!textarea) {
-        console.error("Couldn't find chat's textarea")
+        console.error("Couldn't find chat's textarea");
     }
     if (!button) {
-        console.error("Couldn't find chat's send button")
+        console.error("Couldn't find chat's send button");
     }
     if ((!button) && (!textarea)) {
         throw Error("Missing DOM elements! See previous logs!");
@@ -104,7 +104,7 @@ onReady(function() {
     button.onclick = function(event) {
         sendMessage(textarea.value);
         textarea.value = "";
-    }
+    };
     textarea.onkeypress = function(event) {
         if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
