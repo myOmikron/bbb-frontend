@@ -117,7 +117,7 @@ function onReady(callbackFunction){
     document.addEventListener("DOMContentLoaded", callbackFunction)
 }
 
-export let instance = null;
+let instance;
 onReady(() => {
     instance = new Chat();
 });

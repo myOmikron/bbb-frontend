@@ -22,15 +22,15 @@ function tryReconnect() {
         console.debug(error);
         if (error === null) {
             clearInterval(connecting);
-        }
-
-        switch (error.code) {
-            case error.MEDIA_ERR_NETWORK:
-                resetPlayer();
-                break;
-            case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                resetPlayer();
-                break;
+        } else {
+            switch (error.code) {
+                case error.MEDIA_ERR_NETWORK:
+                    resetPlayer();
+                    break;
+                case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                    resetPlayer();
+                    break;
+            }
         }
     }, 5000);
 }
