@@ -63,7 +63,9 @@ class Chat {
             } else if (data.type === "chat.redirect") {
                 this.onRedirect(data);
             } else if (data.type === "chat.update") {
-                this.onUpdate(data)
+                this.onUpdate(data);
+            } else if (data.type === "chat.reload") {
+                this.onReload(data);
             } else {
                 console.error(`Incoming WebSocket json object is of unknown type: '${data.type}'`);
             }
@@ -83,6 +85,10 @@ class Chat {
             type: "chat.message",
             message,
         }))
+    }
+
+    onReload({type}) {
+        window.location.reload();
     }
 
     onUpdate({type, viewers}) {
