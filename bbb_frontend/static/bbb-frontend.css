@@ -55,7 +55,7 @@ body {
 
 .messageChatContent {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     height: 82vh;
     height: calc(var(--vh, 1vh) * 82);
     overflow-y: auto;
