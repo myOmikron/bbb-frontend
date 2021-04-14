@@ -88,7 +88,7 @@ class Chat {
     }
 
     onReload({type}) {
-        window.location.reload();
+        tryReconnect();
     }
 
     onUpdate({type, viewers}) {

@@ -52,13 +52,14 @@
                 });
             </script>
             <script src="{% static 'player.js' %}"></script>
+            <script src="{% static 'chat.js' %}"></script>
         </div>
     </div>
 
-{% if debug %}
+<!--{% if debug %}
     <script>let chat; import("{% static 'chat.js' %}").then((module) => { chat = module; });</script>
 {% else %}
     <script type="module" src="{% static 'chat.js' %}"></script>
-{% endif %}
+{% endif %}-->
 </body>
 </html>

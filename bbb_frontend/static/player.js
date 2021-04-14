@@ -15,19 +15,22 @@ function resetPlayer() {
     }
 }
 
-let connecting = setInterval(function() {
-    const error = player.error();
-    console.debug(error);
-    if (error === null) {
-        clearInterval(connecting);
-    }
+let connecting;
+function tryReconnect() {
+    setInterval(function() {
+        const error = player.error();
+        console.debug(error);
+        if (error === null) {
+            clearInterval(connecting);
+        }
 
-    switch (error.code) {
-        case error.MEDIA_ERR_NETWORK:
-            resetPlayer();
-            break;
-        case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-            resetPlayer();
-            break;
-    }
-}, 1000);
+        switch (error.code) {
+            case error.MEDIA_ERR_NETWORK:
+                resetPlayer();
+                break;
+            case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                resetPlayer();
+                break;
+        }
+    }, 5000);
+}
