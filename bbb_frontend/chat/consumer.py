@@ -61,7 +61,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         # Increment the viewer count by 1
-        await viewers[self.meeting_id].increment()
+        await viewers[meeting_id].increment()
 
         # Save meeting and user
         # => When these aren't set, this method didn't terminate correctly and the counter wasn't incremented
