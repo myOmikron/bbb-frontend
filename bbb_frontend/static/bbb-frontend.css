@@ -48,14 +48,16 @@ body {
 
 .viewerCountContent {
     margin-left: 0.75em;
+    height: 3vh;
+    height: calc(var(--vh, 1vh) * 3);
     color: black;
 }
 
 .messageChatContent {
     display: flex;
     flex-direction: column;
-    height: 85vh;
-    height: calc(var(--vh, 1vh) * 85);
+    height: 82vh;
+    height: calc(var(--vh, 1vh) * 82);
     overflow-y: auto;
     padding: 0.75em 0.75em 0.75em 2em;
 }
