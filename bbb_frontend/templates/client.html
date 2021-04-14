@@ -31,7 +31,7 @@
                 <img src="{% static 'img/chat.svg' %}" alt="Toggle Chat">
             </button>
         </div>
-        <div class="streamContent">
+        <div class="streamContent" id="stream">
             <video id="my-video" class="video-js vjs-big-play-centered">
                 <source src="/hls/{{ session }}.m3u8" type="application/vnd.apple.mpegurl">
                 <p class="vjs-no-js">
