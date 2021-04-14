@@ -15,11 +15,16 @@ function resetPlayer() {
     }
 }
 
-document.getElementById("my-video").addEventListener('error', function(err) {
-    const mediaError = err.currentTarget.error;
-    switch(mediaError.code) {
-        case mediaError.MEDIA_ERR_NETWORK:
-            resetPlayer();
-        break;
+let connecting = setInterval(function() {
+    const error = player.error();
+    console.debug(error);
+    if (!error) {
+        clearInterval(connecting);
     }
- });
+
+    switch (error.code) {
+        case error.MEDIA_ERR_NETWORK:
+            resetPlayer();
+            break;
+    }
+}, 1000);
