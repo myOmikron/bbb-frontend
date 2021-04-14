@@ -1,4 +1,15 @@
-const TEMPLATE = "" +
+"use strict";
+
+function onReady(callbackFunction){
+    if(document.readyState !== 'loading')
+        callbackFunction()
+    else
+        document.addEventListener("DOMContentLoaded", callbackFunction)
+}
+
+onReady(function() {
+    // Template for chat messages
+    var TEMPLATE = "" +
     "<div class='message'>" +
     "    <div class='messageColor' style='background-color: $COLOR;'>$ID</div>" +
     "    <div class='messageContent'>" +
@@ -7,117 +18,106 @@ const TEMPLATE = "" +
     "    </div>" +
     "</div>";
 
-const parser = document.createElement("div");
-function parse(html) {
-    parser.innerHTML = html;
-    return parser.firstChild;
-}
+    // Helper object and function to create objects from template
+    var parser = document.createElement("div");
+    function parse(html) {
+        parser.innerHTML = html;
+        return parser.firstChild;
+    }
 
-class Chat {
-    constructor() {
-        this.viewers = document.getElementById("viewers");
-        this.messages = document.getElementsByClassName("messageChatContent")[0];
-        this.textarea = document.getElementById("chatTextarea")
-        this.button = document.getElementById("chatSendButton")
-        if (!this.textarea) {
-            console.error("Couldn't find chat's textarea")
-        }
-        if (!this.button) {
-            console.error("Couldn't find chat's send button")
-        }
-        if ((!this.button) && (!this.textarea)) {
-            throw Error("Missing DOM elements! See previous logs!");
-        }
-        this.button.onclick = (event) => {
-            this.sendMessage(this.textarea.value);
-            this.textarea.value = "";
-        }
-        this.textarea.onkeypress = (event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                this.button.click();
-            }
-        };
-        this.setupSocket();
-        this.updateInterval = setInterval(() => {
-            this.socket.send(JSON.stringify({
-                type: "chat.update"
-            }));
-        }, 1000);
-    };
-
-
-    setupSocket() {
+    function setupSocket() {
         const url = window.location;
         const protocol = url.protocol.replace("http", "ws");
 
-        this.socket = new WebSocket(protocol+"//"+url.host+url.pathname);
+        socket = new WebSocket(protocol+"//"+url.host+url.pathname);
 
-        this.socket.onopen = () => {
-        };
+        socket.onopen = function() {};
 
-        this.socket.onmessage = (event) => {
+        socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
             if (data.type === "chat.message") {
-                this.onMessage(data);
+                onMessage(data);
             } else if (data.type === "chat.redirect") {
-                this.onRedirect(data);
+                onRedirect(data);
             } else if (data.type === "chat.update") {
-                this.onUpdate(data);
+                onUpdate(data);
             } else if (data.type === "chat.reload") {
-                this.onReload(data);
+                onReload(data);
             } else {
                 console.error(`Incoming WebSocket json object is of unknown type: '${data.type}'`);
             }
         };
 
-        this.socket.onerror = (event) => {
+        socket.onerror = function(event) {
             console.error(event);
         };
 
-        this.socket.onclose = () => {
-            setTimeout(this.setupSocket.bind(this), 1000);
+        socket.onclose = function() {
+            setTimeout(setupSocket, 1000);
         };
     }
 
-    sendMessage(message) {
-        this.socket.send(JSON.stringify({
+    function sendMessage(message) {
+        socket.send(JSON.stringify({
             type: "chat.message",
             message,
         }))
     }
 
-    onReload({type}) {
+    function onReload(obj) {
         tryReconnect();
     }
 
-    onUpdate({type, viewers}) {
-        this.viewers.innerHTML = "" + viewers;
+    function onUpdate(obj) {
+        viewers.innerHTML = "" + obj.viewers;
     }
 
-    onRedirect({type, url}) {
-        window.location = url;
+    function onRedirect(obj) {
+        window.location = obj.url;
     }
 
-    onMessage({type, user_name, message}) {
-        this.messages.appendChild(parse(
+    function onMessage(obj) {
+        messages.appendChild(parse(
             TEMPLATE
             .replace("$COLOR", "#00F")
-            .replace("$ID", user_name.slice(0, 2))
-            .replace("$USER", user_name)
-            .replace("$MESSAGE", message)
+            .replace("$ID", obj.user_name.slice(0, 2))
+            .replace("$USER", obj.user_name)
+            .replace("$MESSAGE", obj.message)
         ));
     }
-}
 
-function onReady(callbackFunction){
-  if(document.readyState !== 'loading')
-    callbackFunction()
-  else
-    document.addEventListener("DOMContentLoaded", callbackFunction)
-}
+    var viewers = document.getElementById("viewers");
+    var messages = document.getElementsByClassName("messageChatContent")[0];
+    var textarea = document.getElementById("chatTextarea");
+    var button = document.getElementById("chatSendButton");
 
-let instance;
-onReady(() => {
-    instance = new Chat();
+    if (!textarea) {
+        console.error("Couldn't find chat's textarea")
+    }
+    if (!button) {
+        console.error("Couldn't find chat's send button")
+    }
+    if ((!button) && (!textarea)) {
+        throw Error("Missing DOM elements! See previous logs!");
+    }
+
+    button.onclick = function(event) {
+        sendMessage(textarea.value);
+        textarea.value = "";
+    }
+    textarea.onkeypress = function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            button.click();
+        }
+    };
+
+    var socket;
+    setupSocket();
+
+    var updateInterval = setInterval(function() {
+        socket.send(JSON.stringify({
+            type: "chat.update"
+        }));
+    }, 1000);
 });

@@ -1,5 +1,6 @@
-let reloading = false;
+"use strict";
 
+var reloading = false;
 function resetPlayer() {
     if (!reloading) {
         reloading = true;
@@ -15,10 +16,10 @@ function resetPlayer() {
     }
 }
 
-let connecting;
+var connecting;
 function tryReconnect() {
     setInterval(function() {
-        const error = player.error();
+        var error = player.error();
         console.debug(error);
         if (error === null) {
             clearInterval(connecting);
