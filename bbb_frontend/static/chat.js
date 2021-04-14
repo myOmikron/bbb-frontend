@@ -1,10 +1,11 @@
 "use strict";
 
 function onReady(callbackFunction){
-    if(document.readyState !== 'loading')
+    if (document.readyState !== 'loading') {
         callbackFunction();
-    else
+    } else {
         document.addEventListener("DOMContentLoaded", callbackFunction);
+    }
 }
 
 onReady(function() {
