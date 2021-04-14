@@ -78,7 +78,7 @@ onReady(function() {
     }
 
     function onMessage(obj) {
-        messages.insertAdjacentElement("beforebegin", parse(
+        messages.insertBefore(messages.firstChild, parse(
             TEMPLATE
             .replace("$COLOR", "#00F")
             .replace("$ID", obj.user_name.slice(0, 2))
