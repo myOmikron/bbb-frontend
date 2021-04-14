@@ -103,8 +103,10 @@ onReady(function() {
     }
 
     button.onclick = function(event) {
-        sendMessage(textarea.value);
-        textarea.value = "";
+        if (textarea.value !== "") {
+            sendMessage(textarea.value);
+            textarea.value = "";
+        }
     };
     textarea.onkeypress = function(event) {
         if (event.key === "Enter" && !event.shiftKey) {
