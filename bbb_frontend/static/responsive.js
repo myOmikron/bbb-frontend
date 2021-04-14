@@ -1,8 +1,8 @@
 function toggleChat() {
-    let chat = document.getElementById("chat");
-    let video = document.getElementById("stream");
-    let toggleButton = document.getElementById("toggleButton");
-    let width = window.innerWidth;
+    var chat = document.getElementById("chat");
+    var video = document.getElementById("stream");
+    var toggleButton = document.getElementById("toggleButton");
+    var width = window.innerWidth;
     if (width <= 680) {
         if (chat.style.display === "flex") {
             chat.style.display = "none";
@@ -28,10 +28,10 @@ function toggleChat() {
     }
 }
 
-let vh = window.innerHeight * 0.01;
-document.documentElement.style.setProperty('--vh', `${vh}px`);
+var vh = window.innerHeight * 0.01;
+document.documentElement.style.setProperty('--vh', ""+vh+"px");
 
-window.addEventListener('resize', () => {
-  let vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
+window.addEventListener('resize', function() {
+  var vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', ""+vh+"px");
 });

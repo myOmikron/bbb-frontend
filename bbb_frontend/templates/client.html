@@ -40,7 +40,7 @@
                 </p>
              </video>
             <script>
-                const player = videojs('my-video', {
+                var player = videojs('my-video', {
                     fluid: true,
                     autoplay: "play",
                     preload: "auto",
@@ -51,13 +51,15 @@
                     poster: "{% static 'img/thumbnail.png' %}"
                 });
             </script>
+            <script src="{% static 'player.js' %}"></script>
+            <script src="{% static 'chat.js' %}"></script>
         </div>
     </div>
 
-{% if debug %}
+<!--{% if debug %}
     <script>let chat; import("{% static 'chat.js' %}").then((module) => { chat = module; });</script>
 {% else %}
     <script type="module" src="{% static 'chat.js' %}"></script>
-{% endif %}
+{% endif %}-->
 </body>
 </html>

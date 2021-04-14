@@ -7,6 +7,7 @@ from channels.exceptions import InvalidChannelLayerError
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.conf import settings
+from django.utils.html import escape
 from rc_protocol import get_checksum
 import httpx
 
@@ -81,8 +82,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             raise ValueError("No text section for incoming WebSocket frame!")
 
         if data["type"] == "chat.message":
+            data["message"] = escape(data["message"])
             data["user_name"] = self.user_name
-            # await self.channel_layer.send("chatCallback", {"chat_id": self.meeting_id, **data})
             await self.channel_layer.group_send(self.meeting_id, data)
 
             chat = await Chat.objects.aget(self.meeting_id)
