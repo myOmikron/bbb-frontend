@@ -2,12 +2,33 @@ from asgiref.sync import async_to_sync
 from django.http import JsonResponse
 from channels.layers import get_channel_layer
 
-from bbb_common_api.views import PostApiPoint
+from bbb_common_api.views import PostApiPoint, GetApiPoint
+from chat.counter import viewers
 from frontend.models import Channel
 from chat.models import Chat
 
 
 channel_layer = get_channel_layer()
+
+
+class ViewerCount(GetApiPoint):
+
+    endpoint = "viewerCount"
+    required_parameters = ["meeting_id"]
+
+    def safe_get(self, request, *args, **kwargs):
+        meeting_id = request.GET.get("meeting_id")
+        if meeting_id in viewers:
+            amount = viewers[meeting_id].value
+            return JsonResponse(
+                {"success": True, "message": f"The meeting '{meeting_id}' has {amount} viewers", "value": amount},
+            )
+        else:
+            return JsonResponse(
+                {"success": False, "message": f"Unknown meeting '{meeting_id}'"},
+                status=404,
+                reason=f"Unknown meeting '{meeting_id}'"
+            )
 
 
 class StartChat(PostApiPoint):
