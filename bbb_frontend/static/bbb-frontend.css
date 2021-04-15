@@ -1,6 +1,6 @@
 body {
     background-color: #06172A;
-    font-family: 'Source Sans Pro', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     color: white;
     margin: 0;
 }
@@ -82,9 +82,10 @@ body {
     font-size: small;
     height: 2.5em;
     width: 2.5em;
+    min-width: 2.5em;
     margin-right: 0.5em;
-    background-color: #0F70D7;
-    border-radius: 2px;
+    background-color: #01579b;
+    border-radius: 5px;
 }
 
 .messageContent {

@@ -80,7 +80,7 @@ onReady(function() {
     function onMessage(obj) {
         messages.insertBefore(parse(
             TEMPLATE
-            .replace("$COLOR", "#00F")
+            .replace("$COLOR", "#01579b")
             .replace("$ID", obj.user_name.slice(0, 2))
             .replace("$USER", obj.user_name)
             .replace("$MESSAGE", obj.message)
