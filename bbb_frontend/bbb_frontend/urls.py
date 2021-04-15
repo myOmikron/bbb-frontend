@@ -13,5 +13,6 @@ urlpatterns = [
     path('api/v1/startChat', StartChat.as_view()),
     path('api/v1/sendMessage', SendMessage.as_view()),
     path('api/v1/endChat', EndChat.as_view()),
+    path('api/v1/viewerCount', ViewerCount.as_view()),
     path('', include(frontend.urls)),
 ]
