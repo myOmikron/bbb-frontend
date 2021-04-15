@@ -78,13 +78,13 @@ onReady(function() {
     }
 
     function onMessage(obj) {
-        messages.insertAdjacentElement("beforebegin", parse(
+        messages.insertBefore(parse(
             TEMPLATE
             .replace("$COLOR", "#00F")
             .replace("$ID", obj.user_name.slice(0, 2))
             .replace("$USER", obj.user_name)
             .replace("$MESSAGE", obj.message)
-        ));
+        ), messages.firstChild);
     }
 
     var viewers = document.getElementById("viewers");
