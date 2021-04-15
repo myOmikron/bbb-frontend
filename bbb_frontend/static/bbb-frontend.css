@@ -60,6 +60,7 @@ body {
     height: 82vh;
     height: calc(var(--vh, 1vh) * 82);
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 0.75em 0.75em 0.75em 2em;
 }
 
