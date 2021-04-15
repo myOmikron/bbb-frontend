@@ -132,6 +132,7 @@ STATICFILES_DIRS = [
 
 # Channels
 ASGI_APPLICATION = "bbb_frontend.asgi.application"
+"""
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -140,6 +141,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
+"""
 SHARED_SECRET = "change_me"
 SHARED_SECRET_TIME_DELTA = 5
+
+DEFAULT_WELCOME_MSG = "Welcome to this stream!\n\nThis server is running https://github.com/myOmikron/bbb-frontend"

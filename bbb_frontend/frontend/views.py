@@ -156,6 +156,8 @@ class WatchView(TemplateView):
             )
         try:
             welcome_msg = Channel.objects.get(meeting_id=meeting_id).welcome_msg
+            if not welcome_msg:
+                welcome_msg = settings.DEFAULT_WELCOME_MSG
         except Channel.DoesNotExist:
             return render(
                 request, "info.html",
