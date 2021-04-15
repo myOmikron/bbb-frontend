@@ -35,8 +35,6 @@ body {
     display: block;
     margin: 0.75em;
     padding: 1em;
-    height: 10vh;
-    height: calc(var(--vh, 1vh) * 10);
     width: auto;
     background-color: #F9FBFC;
     border: 1px solid #C5CDD4;
