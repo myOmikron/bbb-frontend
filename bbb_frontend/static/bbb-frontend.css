@@ -33,7 +33,7 @@ body {
 
 .staticChatContent {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     margin: 0.75em;
     padding: 1em;
     height: 10vh;
@@ -44,6 +44,8 @@ body {
     border-radius: 5px;
     overflow: hidden;
     color: black;
+    font-weight: bold;
+    font-size: small;
 }
 
 .viewerCountContent {
