@@ -60,3 +60,13 @@ class Chat(models.Model):
 
     def __str__(self):
         return self.channel.meeting_id
+
+
+class Message(models.Model):
+
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    message = models.CharField(max_length=4096, default="")
+    user_name = models.CharField(max_length=255, default="")
+
+    def __str__(self):
+        return f"Message by {self.user_name}"

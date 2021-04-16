@@ -34,18 +34,27 @@ onReady(function() {
 
         socket.onopen = function() {};
 
+        function onEvent(event) {
+            if (event.type === "chat.message") {
+                onMessage(event);
+            } else if (event.type === "chat.redirect") {
+                onRedirect(event);
+            } else if (event.type === "chat.update") {
+                onUpdate(event);
+            } else if (event.type === "chat.reload") {
+                onReload(event);
+            } else {
+                console.error("Incoming WebSocket json object is of unknown type: '"+event.type+"'");
+            }
+        }
         socket.onmessage = function(event) {
             var data = JSON.parse(event.data);
-            if (data.type === "chat.message") {
-                onMessage(data);
-            } else if (data.type === "chat.redirect") {
-                onRedirect(data);
-            } else if (data.type === "chat.update") {
-                onUpdate(data);
-            } else if (data.type === "chat.reload") {
-                onReload(data);
+            if (Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    onEvent(data[i]);
+                }
             } else {
-                console.error("Incoming WebSocket json object is of unknown type: '"+data.type+"'");
+                onEvent(data);
             }
         };
 
