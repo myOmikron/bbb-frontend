@@ -140,6 +140,7 @@ body {
     font-size: large;
     resize: none;
     overflow: hidden;
+    font-family: Arial, sans-serif;
 }
 
 .controlsChatContent textarea:hover {
