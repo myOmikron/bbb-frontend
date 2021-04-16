@@ -187,7 +187,10 @@ body {
     display: flex;
     align-items: center;
     width: 100%;
-    height: auto;
+    height: 90vh;
+    height: calc(var(--vh, 1vh) * 90);
+    margin-top: 5vh;
+    margin-top: calc(var(--vh, 1vh) * 5);
 }
 
 .box {
