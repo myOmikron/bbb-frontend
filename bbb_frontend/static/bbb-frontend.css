@@ -205,12 +205,13 @@ body {
 
 .vjs-big-play-button {
     font-size: 8em !important;
+    background-color: rgba(153, 0, 0, 0.7) !important;
 }
 
 .video-js:hover .vjs-big-play-button,
 .video-js .vjs-big-play-button:focus {
     background-color: #545f66 !important;
-    background-color: rgba(84, 95, 102, 0.5) !important;
+    background-color: rgba(153, 0, 0, 0.5) !important;
 }
 
 .vjs-poster {
