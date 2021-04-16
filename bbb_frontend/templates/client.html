@@ -19,7 +19,7 @@
                 {% endautoescape %}
             </div>
             <div class="viewerCountContent">
-                <span id="viewers">0</span> Zuschauer
+                Zuschauer: <span id="viewers">0</span>
             </div>
             <div class="messageChatContent">
             </div>
@@ -57,11 +57,5 @@
             <script src="{% static 'chat.js' %}"></script>
         </div>
     </div>
-
-<!--{% if debug %}
-    <script>let chat; import("{% static 'chat.js' %}").then((module) => { chat = module; });</script>
-{% else %}
-    <script type="module" src="{% static 'chat.js' %}"></script>
-{% endif %}-->
 </body>
 </html>
