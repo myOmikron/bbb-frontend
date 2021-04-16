@@ -86,6 +86,7 @@ onReady(function() {
         window.location = obj.url;
     }
 
+    var overflowing = false;
     function onMessage(obj) {
         messages.insertBefore(parse(
             TEMPLATE
@@ -94,6 +95,13 @@ onReady(function() {
             .replace("$USER", obj.user_name)
             .replace("$MESSAGE", obj.message)
         ), messages.firstChild);
+
+        if (!overflowing) {
+            if (messages.scrollHeight > messages.offsetHeight) {
+                document.getElementsByClassName("viewerCountContent")[0].classList.add("overflowShadow");
+                overflowing = true;
+            }
+        }
     }
 
     var viewers = document.getElementById("viewers");
