@@ -79,7 +79,9 @@ onReady(function() {
     }
 
     function onUpdate(obj) {
-        viewers.innerHTML = "" + obj.viewers;
+        if (viewers.innerHTML != obj.viewers) {
+            viewers.innerHTML = "" + obj.viewers;
+        }
     }
 
     function onRedirect(obj) {
