@@ -119,8 +119,10 @@ onReady(function() {
     setupSocket();
 
     var updateInterval = setInterval(function() {
-        socket.send(JSON.stringify({
-            type: "chat.update"
-        }));
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({
+                type: "chat.update"
+            }));
+        }
     }, 1000);
 });
