@@ -69,11 +69,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.meeting_id = meeting_id
         self.user_name = user_name
 
+        await self.send(text_data=json.dumps(await self.get_old_message()))
+
     def __del__(self):
         # Check if consumer has finished connecting
         if hasattr(self, "meeting_id"):
             # Decrement the viewer count by 1
             viewers[self.meeting_id].decrement()
+
+    @database_sync_to_async
+    def get_old_message(self):
+        return [
+            {"type": "chat.message", "user_name": msg.user_name, "message": msg.message}
+            for msg in Message.objects.filter(chat__channel__meeting_id=self.meeting_id)
+        ]
 
     async def receive(self, text_data=None, bytes_data=None):
         if text_data:
@@ -95,10 +104,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
                 params["checksum"] = get_checksum(params, chat.callback_secret, "sendMessage")
 
-                before = time()
                 async with httpx.AsyncClient() as client:
                     await client.post(chat.callback_uri.rstrip("/") + "/sendMessage", json=params)
-                self.logger.debug(f"Took {time() - before:.3f}ms to send request")
 
                 await database_sync_to_async(Message.objects.create)(
                     chat=chat, user_name=self.user_name, message=data["message"]
