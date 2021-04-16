@@ -11,24 +11,24 @@ from chat.models import Chat
 channel_layer = get_channel_layer()
 
 
-class ViewerCount(GetApiPoint):
+class ViewerCounts(GetApiPoint):
 
-    endpoint = "viewerCount"
-    required_parameters = ["meeting_id"]
+    endpoint = "viewerCounts"
+    required_parameters = []
 
     def safe_get(self, request, *args, **kwargs):
-        meeting_id = request.GET.get("meeting_id")
-        if meeting_id in viewers:
-            amount = viewers[meeting_id].value
-            return JsonResponse(
-                {"success": True, "message": f"The meeting '{meeting_id}' has {amount} viewers", "value": amount},
-            )
+        if "meeting_id" in request.GET:
+            ids = request.GET.getlist("meeting_id")
         else:
-            return JsonResponse(
-                {"success": False, "message": f"Unknown meeting '{meeting_id}'"},
-                status=404,
-                reason=f"Unknown meeting '{meeting_id}'"
-            )
+            ids = (chat.meeting_id for chat in Chat.objects.all())
+
+        viewer_counts = {}
+        for meeting_id in ids:
+            viewer_counts[meeting_id] = viewers[meeting_id].value
+
+        return JsonResponse(
+            {"success": True, "message": "Success, see 'content'", "content": viewer_counts}
+        )
 
 
 class StartChat(PostApiPoint):

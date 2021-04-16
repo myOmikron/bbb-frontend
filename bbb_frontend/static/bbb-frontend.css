@@ -53,6 +53,10 @@ body {
     color: black;
 }
 
+.overflowShadow {
+    box-shadow: -7.5px 15px 15px #ccc;
+}
+
 .messageChatContent {
     display: flex;
     flex-direction: column-reverse;

@@ -34,18 +34,27 @@ onReady(function() {
 
         socket.onopen = function() {};
 
+        function onEvent(event) {
+            if (event.type === "chat.message") {
+                onMessage(event);
+            } else if (event.type === "chat.redirect") {
+                onRedirect(event);
+            } else if (event.type === "chat.update") {
+                onUpdate(event);
+            } else if (event.type === "chat.reload") {
+                onReload(event);
+            } else {
+                console.error("Incoming WebSocket json object is of unknown type: '"+event.type+"'");
+            }
+        }
         socket.onmessage = function(event) {
             var data = JSON.parse(event.data);
-            if (data.type === "chat.message") {
-                onMessage(data);
-            } else if (data.type === "chat.redirect") {
-                onRedirect(data);
-            } else if (data.type === "chat.update") {
-                onUpdate(data);
-            } else if (data.type === "chat.reload") {
-                onReload(data);
+            if (Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    onEvent(data[i]);
+                }
             } else {
-                console.error("Incoming WebSocket json object is of unknown type: '"+data.type+"'");
+                onEvent(data);
             }
         };
 
@@ -77,6 +86,7 @@ onReady(function() {
         window.location = obj.url;
     }
 
+    var overflowing = false;
     function onMessage(obj) {
         messages.insertBefore(parse(
             TEMPLATE
@@ -85,6 +95,13 @@ onReady(function() {
             .replace("$USER", obj.user_name)
             .replace("$MESSAGE", obj.message)
         ), messages.firstChild);
+
+        if (!overflowing) {
+            if (messages.scrollHeight > messages.offsetHeight) {
+                document.getElementsByClassName("viewerCountContent")[0].classList.add("overflowShadow");
+                overflowing = true;
+            }
+        }
     }
 
     var viewers = document.getElementById("viewers");
