@@ -45,7 +45,9 @@ body {
 }
 
 .viewerCountContent {
-    margin-left: 0.75em;
+    padding-left: 0.75em;
+    padding-bottom: 0.5vh;
+    height: calc(var(--vh, 1vh) * 0.5);
     height: 3vh;
     height: calc(var(--vh, 1vh) * 3);
     color: black;
