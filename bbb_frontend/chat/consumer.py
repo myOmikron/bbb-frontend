@@ -11,7 +11,7 @@ from django.utils.html import escape
 from rc_protocol import get_checksum
 import httpx
 
-from chat.models import Chat
+from chat.models import Chat, Message
 from chat.counter import viewers
 
 
@@ -99,6 +99,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 async with httpx.AsyncClient() as client:
                     await client.post(chat.callback_uri.rstrip("/") + "/sendMessage", json=params)
                 self.logger.debug(f"Took {time() - before:.3f}ms to send request")
+
+                await database_sync_to_async(Message.objects.create)(
+                    chat=chat, user_name=self.user_name, message=data["message"]
+                )
         elif data["type"] == "chat.update":
             await self.send(text_data=json.dumps({
                 "type": "chat.update",
