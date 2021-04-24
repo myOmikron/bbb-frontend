@@ -1,7 +1,6 @@
 import hashlib
 import json
 import logging
-from time import time
 
 from channels.exceptions import InvalidChannelLayerError
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -81,7 +80,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_old_message(self):
         return [
             {"type": "chat.message", "user_name": msg.user_name, "message": msg.message}
-            for msg in Message.objects.filter(chat__channel__meeting_id=self.meeting_id)
+            for msg in Message.objects.filter(chat__chat_id=self.meeting_id)
         ]
 
     async def receive(self, text_data=None, bytes_data=None):

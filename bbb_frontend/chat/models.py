@@ -2,8 +2,6 @@ from django.db import models
 from channels.db import database_sync_to_async
 from django.db.models.signals import post_save, pre_delete
 
-from frontend.models import Channel
-
 
 class CachedManager(models.Manager):
 
@@ -51,15 +49,15 @@ class CachedManager(models.Manager):
 
 class Chat(models.Model):
 
-    channel = models.OneToOneField(Channel, on_delete=models.CASCADE)
+    chat_id = models.CharField(max_length=255, default="", unique=True)
     callback_uri = models.CharField(max_length=255, default="")
     callback_secret = models.CharField(max_length=255, default="")
     callback_id = models.CharField(max_length=255, default="")
 
-    objects = CachedManager("channel__meeting_id")
+    objects = CachedManager("chat_id")
 
     def __str__(self):
-        return self.channel.meeting_id
+        return self.chat_id
 
 
 class Message(models.Model):

@@ -4,7 +4,6 @@ from channels.layers import get_channel_layer
 
 from bbb_common_api.views import PostApiPoint, GetApiPoint
 from chat.counter import viewers
-from frontend.models import Channel
 from chat.models import Chat
 
 
@@ -64,15 +63,8 @@ class StartChat(PostApiPoint):
                        f"are mandatory when enabling callbacks, but are missing"
             )
 
-        try:
-            channel = Channel.objects.get(meeting_id=parameters["chat_id"])
-        except Channel.DoesNotExist:
-            return JsonResponse(
-                {"success": False, "message": "No channel found. Please open it first."},
-                status=404, reason="No channel found. Please open it first."
-            )
-
-        if Chat.objects.filter(channel=channel).count() > 0:
+        chat_id = parameters["chat_id"]
+        if Chat.objects.filter(chat_id=chat_id).count() > 0:
             return JsonResponse(
                 {"success": False, "message": "Channel's chat has already been started."},
                 status=304,
@@ -81,14 +73,14 @@ class StartChat(PostApiPoint):
         else:
             if len(missing) == 0:
                 Chat.objects.create(
-                    channel=channel,
+                    chat_id=chat_id,
                     callback_uri=parameters["callback_uri"],
                     callback_secret=parameters["callback_secret"],
                     callback_id=parameters["callback_id"],
                 )
             else:
                 Chat.objects.create(
-                    channel=channel
+                    chat_id=chat_id,
                 )
             return JsonResponse({"success": True, "message": "Added room successfully."})
 
@@ -106,8 +98,8 @@ class EndChat(PostApiPoint):
             )
         except Chat.DoesNotExist:
             return JsonResponse(
-                {"success": False, "message": "No chat was found. Perhaps the channel was already closed?"},
-                status=404, reason="No chat was found. Perhaps the channel was already closed?"
+                {"success": False, "message": "No chat was found"},
+                status=404, reason="No chat was found"
             )
 
 
