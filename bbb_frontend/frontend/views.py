@@ -72,6 +72,10 @@ class OpenChannelView(PostApiPoint):
             channel.welcome_msg = f"Welcome to {channel.meeting_id}!"
         if "redirect_url" in parameters:
             channel.redirect_url = parameters["redirect_url"]
+        if "websocket_url" in parameters:
+            channel.websocket_url = parameters["websocket_url"]
+        else:
+            channel.websocket_url = f"/watch/{channel.meeting_id}"
         channel.save()
 
         return JsonResponse(
@@ -155,7 +159,8 @@ class WatchView(TemplateView):
                 status=401
             )
         try:
-            welcome_msg = Channel.objects.get(meeting_id=meeting_id).welcome_msg
+            channel = Channel.objects.get(meeting_id=meeting_id)
+            welcome_msg = channel.welcome_msg
             if not welcome_msg:
                 welcome_msg = settings.DEFAULT_WELCOME_MSG
         except Channel.DoesNotExist:
@@ -166,6 +171,7 @@ class WatchView(TemplateView):
             )
         return render(request, self.template_name, context={
             "session": meeting_id,
+            "websocket_url": channel.websocket_url,
             "debug": settings.DEBUG,
             "welcome_msg": welcome_msg,
         })

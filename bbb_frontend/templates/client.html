@@ -55,6 +55,9 @@
             </script>
             <script src="{% static 'player.js' %}"></script>
             <script src="{% static 'chat.js' %}"></script>
+            <script>
+                connectChat("{{ websocket_url }}");
+            </script>
         </div>
     </div>
 </body>
