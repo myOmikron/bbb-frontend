@@ -33,7 +33,6 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'frontend',
-    'chat.apps.ChatConfig',
 ]
 
 MIDDLEWARE = [
@@ -132,15 +130,6 @@ STATICFILES_DIRS = [
 
 # Channels
 ASGI_APPLICATION = "bbb_frontend.asgi.application"
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
 
 SHARED_SECRET = "change_me"
 SHARED_SECRET_TIME_DELTA = 5
