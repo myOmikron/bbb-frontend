@@ -6,6 +6,7 @@ from channels.layers import get_channel_layer
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
+from django.utils.http import urlencode
 from django.views.generic.base import View, TemplateView
 from rc_protocol import validate_checksum
 
@@ -72,10 +73,6 @@ class OpenChannelView(PostApiPoint):
             channel.welcome_msg = f"Welcome to {channel.meeting_id}!"
         if "redirect_url" in parameters:
             channel.redirect_url = parameters["redirect_url"]
-        if "websocket_url" in parameters:
-            channel.websocket_url = parameters["websocket_url"]
-        else:
-            channel.websocket_url = f"/watch/{channel.meeting_id}"
         channel.save()
 
         return JsonResponse(
@@ -169,9 +166,15 @@ class WatchView(TemplateView):
                 {"info": "Channel does not exist!", "status": "Bad request", "code": "400"},
                 status=400
             )
+
+        ws_checksum = hashlib.sha512(f"{user_name}{meeting_id}{settings.CHAT_SECRET}".encode("utf-8")).hexdigest()
+        ws_url = settings.CHAT_HOST + "?" + urlencode(
+            {"user_name": user_name, "meeting_id": meeting_id, "checksum": ws_checksum}
+        )
+
         return render(request, self.template_name, context={
             "session": meeting_id,
-            "websocket_url": channel.websocket_url,
+            "websocket_url": ws_url,
             "debug": settings.DEBUG,
             "welcome_msg": welcome_msg,
         })

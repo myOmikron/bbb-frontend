@@ -136,3 +136,6 @@ SHARED_SECRET_TIME_DELTA = 5
 
 DEFAULT_WELCOME_MSG = 'Welcome to this stream!'
 
+
+CHAT_HOST = "wss://change_me"
+CHAT_SECRET = "change_me"
