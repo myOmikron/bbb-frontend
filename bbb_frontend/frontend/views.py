@@ -62,10 +62,7 @@ class CloseChannelView(PostApiPoint):
     def safe_post(self, request, parameters, *args, **kwargs):
         try:
             channel = Channel.objects.get(meeting_id=parameters["meeting_id"])
-            # async_to_sync(channel_layer.group_send)(channel.meeting_id, {
-            #     "type": "chat.redirect",
-            #     "url": channel.redirect_url
-            # })
+            WebsocketConsumer.redirect(channel)
             channel.delete()
         except Channel.DoesNotExist:
             return JsonResponse(
