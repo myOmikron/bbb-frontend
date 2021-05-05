@@ -1,10 +1,17 @@
 import hashlib
+import json
 
+from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
+from channels.exceptions import InvalidChannelLayerError
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
 from django.conf import settings
 
 from frontend.counter import viewers
+from frontend.models import Channel
+
+channel_layer = get_channel_layer()
 
 
 class WebsocketConsumer(AsyncWebsocketConsumer):
@@ -37,6 +44,16 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
             await self.close(1008)
             return
 
+        # Setup channel group
+        self.groups.append(meeting_id)
+        try:
+            for group in self.groups:
+                await self.channel_layer.group_add(group, self.channel_name)
+        except AttributeError:
+            raise InvalidChannelLayerError(
+                "BACKEND is unconfigured or doesn't support groups"
+            )
+
         # Accept connection
         await self.accept()
 
@@ -52,3 +69,22 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         if hasattr(self, "meeting_id"):
             # Decrement the viewer count by 1
             viewers[self.meeting_id].decrement()
+
+    async def page_reload(self, message):
+        await self.send(text_data=json.dumps(message))
+
+    async def page_redirect(self, message):
+        await self.send(text_data=json.dumps(message))
+
+    @staticmethod
+    def reload(meeting_id):
+        async_to_sync(channel_layer.group_send)(meeting_id, {
+            "type": "page.reload",
+        })
+
+    @staticmethod
+    def redirect(meeting_id):
+        async_to_sync(channel_layer.group_send)(meeting_id, {
+            "type": "page.redirect",
+            "url": Channel.objects.get(meeting_id=meeting_id).redirect_url,
+        })

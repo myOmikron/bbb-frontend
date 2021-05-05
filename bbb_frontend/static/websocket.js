@@ -3,9 +3,46 @@
 
     var url = ("" + window.location).replace("http", "ws");
     var socket;
+
     function setupSocket() {
+        console.time("Frontend: Socket Connecting");
         socket = new WebSocket(url);
-        socket.onclose = setupSocket;
+
+        socket.onopen = function () {
+            console.timeEnd("Frontend: Socket Connecting");
+        };
+
+        function onEvent(event) {
+            switch (event.type) {
+                case "page.redirect":
+                    window.location = event.url;
+                    break;
+                case "page.reload":
+                    tryReconnect();
+                    break;
+                default:
+                    console.error("Frontend: Incoming WebSocket json object is of unknown type: '" + event.type + "'");
+            }
+        }
+
+        socket.onmessage = function (event) {
+            var data = JSON.parse(event.data);
+            if (Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    onEvent(data[i]);
+                }
+            } else {
+                onEvent(data);
+            }
+        };
+
+        socket.onerror = function (event) {
+            console.error("Frontend:", event);
+        };
+
+        socket.onclose = function () {
+            setTimeout(setupSocket, 1000);
+        };
     }
     setupSocket();
 })();
@@ -27,10 +64,6 @@ function connectChat(url) {
     }
 
     onReady(function () {
-        "use strict";
-
-        console.time("Pre-Socket Init");
-
         // Template for chat messages
         var TEMPLATE = "" +
             "<div class='message'>" +
@@ -58,13 +91,13 @@ function connectChat(url) {
         var button = document.getElementById("chatSendButton");
 
         if (!textarea) {
-            console.error("Couldn't find chat's textarea");
+            console.error("Chat: Couldn't find chat's textarea");
         }
         if (!button) {
-            console.error("Couldn't find chat's send button");
+            console.error("Chat: Couldn't find chat's send button");
         }
         if ((!button) && (!textarea)) {
-            throw Error("Missing DOM elements! See previous logs!");
+            throw Error("Chat: Missing DOM elements! See previous logs!");
         }
 
         button.onclick = function () {
@@ -86,18 +119,10 @@ function connectChat(url) {
         /*****************
          * Socket Events *
          *****************/
-        function onReload() {
-            tryReconnect();
-        }
-
         function onUpdate(obj) {
             if (viewers.innerHTML != obj.viewers) {
                 viewers.innerHTML = "" + obj.viewers;
             }
-        }
-
-        function onRedirect(obj) {
-            window.location = obj.url;
         }
 
         var overflowing = false;
@@ -125,11 +150,11 @@ function connectChat(url) {
         var socket;
 
         function setupSocket() {
-            console.time("Socket Connecting");
+            console.time("Chat: Socket Connecting");
             socket = new WebSocket(url);
 
             socket.onopen = function () {
-                console.timeEnd("Socket Connecting");
+                console.timeEnd("Chat: Socket Connecting");
             };
 
             function onEvent(event) {
@@ -137,17 +162,11 @@ function connectChat(url) {
                     case "chat.message":
                         onMessage(event);
                         break;
-                    case "chat.redirect":
-                        onRedirect(event);
-                        break;
                     case "chat.update":
                         onUpdate(event);
                         break;
-                    case "chat.reload":
-                        onReload(event);
-                        break;
                     default:
-                        console.error("Incoming WebSocket json object is of unknown type: '" + event.type + "'");
+                        console.error("Chat: Incoming WebSocket json object is of unknown type: '" + event.type + "'");
                 }
             }
 
@@ -163,15 +182,13 @@ function connectChat(url) {
             };
 
             socket.onerror = function (event) {
-                console.error(event);
+                console.error("Chat:", event);
             };
 
             socket.onclose = function () {
                 setTimeout(setupSocket, 1000);
             };
         }
-
-        console.timeEnd("Pre-Socket Init");
 
         setupSocket();
 
