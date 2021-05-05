@@ -1,4 +1,18 @@
+(function() {
+    "use strict";
+
+    var url = ("" + window.location).replace("http", "ws");
+    var socket;
+    function setupSocket() {
+        socket = new WebSocket(url);
+        socket.onclose = setupSocket;
+    }
+    setupSocket();
+})();
+
 function connectChat(url) {
+    "use strict";
+
     if (url[0] === "/") {
         var protocol = window.location.protocol.replace("http", "ws");
         url = protocol + "//" + window.location.host + url
@@ -14,6 +28,8 @@ function connectChat(url) {
 
     onReady(function () {
         "use strict";
+
+        console.time("Pre-Socket Init");
 
         // Template for chat messages
         var TEMPLATE = "" +
@@ -109,9 +125,11 @@ function connectChat(url) {
         var socket;
 
         function setupSocket() {
+            console.time("Socket Connecting");
             socket = new WebSocket(url);
 
             socket.onopen = function () {
+                console.timeEnd("Socket Connecting");
             };
 
             function onEvent(event) {
@@ -152,6 +170,8 @@ function connectChat(url) {
                 setTimeout(setupSocket, 1000);
             };
         }
+
+        console.timeEnd("Pre-Socket Init");
 
         setupSocket();
 
