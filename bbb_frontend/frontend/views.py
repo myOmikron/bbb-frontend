@@ -4,7 +4,7 @@ import uuid
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.http import urlencode
 from django.views.generic.base import View, TemplateView
@@ -15,24 +15,6 @@ from frontend.models import Channel
 from bbb_common_api.views import PostApiPoint, GetApiPoint
 
 channel_layer = get_channel_layer()
-HttpResponseRedirect.allowed_schemes.append("rtmp")
-
-
-class Validate(View):
-    def post(self, request, *args, **kwargs):
-        if "name" not in request.POST:
-            return HttpResponse("Bad Request", status=400)
-        try:
-            channel = Channel.objects.get(streaming_key=request.POST["name"])
-        except Channel.DoesNotExist:
-            return HttpResponse("Not valid", status=404)
-
-        # Signal clients to reload
-        async_to_sync(channel_layer.group_send)(channel.meeting_id, {
-            "type": "chat.reload",
-        })
-
-        return HttpResponseRedirect(f"rtmp://127.0.0.1/accept/{channel.meeting_id}", status=302)
 
 
 class ViewerCounts(GetApiPoint):
