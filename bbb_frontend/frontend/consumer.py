@@ -77,14 +77,14 @@ class WebsocketConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(message))
 
     @staticmethod
-    def reload(meeting_id):
-        async_to_sync(channel_layer.group_send)(meeting_id, {
+    def reload_player(channel: Channel):
+        async_to_sync(channel_layer.group_send)(channel.meeting_id, {
             "type": "page.reload",
         })
 
     @staticmethod
-    def redirect(meeting_id):
-        async_to_sync(channel_layer.group_send)(meeting_id, {
+    def redirect(channel: Channel):
+        async_to_sync(channel_layer.group_send)(channel.meeting_id, {
             "type": "page.redirect",
-            "url": Channel.objects.get(meeting_id=meeting_id).redirect_url,
+            "url": channel.redirect_url,
         })
