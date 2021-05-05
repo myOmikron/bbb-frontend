@@ -10,9 +10,9 @@ from django.utils.http import urlencode
 from django.views.generic.base import View, TemplateView
 from rc_protocol import validate_checksum
 
+from frontend.counter import viewers
 from frontend.models import Channel
-from bbb_common_api.views import PostApiPoint
-
+from bbb_common_api.views import PostApiPoint, GetApiPoint
 
 channel_layer = get_channel_layer()
 HttpResponseRedirect.allowed_schemes.append("rtmp")
@@ -33,6 +33,26 @@ class Validate(View):
         })
 
         return HttpResponseRedirect(f"rtmp://127.0.0.1/accept/{channel.meeting_id}", status=302)
+
+
+class ViewerCounts(GetApiPoint):
+
+    endpoint = "viewerCounts"
+    required_parameters = []
+
+    def safe_get(self, request, *args, **kwargs):
+        if "meeting_id" in request.GET:
+            ids = request.GET.getlist("meeting_id")
+        else:
+            ids = (channel.meeting_id for channel in Channel.objects.all())
+
+        viewer_counts = {}
+        for meeting_id in ids:
+            viewer_counts[meeting_id] = viewers[meeting_id].value
+
+        return JsonResponse(
+            {"success": True, "message": "Success, see 'content'", "content": viewer_counts}
+        )
 
 
 class CloseChannelView(PostApiPoint):
