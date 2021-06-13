@@ -1,13 +1,23 @@
 [Unit]
-Description=BBB-Chat Sync service
-After=bbb-web.service
+Description=BBB Frontend service
+Requires=bbb-frontend.socket
+After=network.target
+
+[Service]
+Type=notify
+# the specific user that our service will run as
+User=bbb-frontend
+Group=bbb-frontend
+# another option for an even more restricted service is
+# DynamicUser=yes
+# see http://0pointer.net/blog/dynamic-users-with-systemd.html
+RuntimeDirectory=gunicorn
+WorkingDirectory=/home/bbb-frontend/bbb-frontend/bbb_frontend/
+ExecStart=/home/bbb-frontend/bbb-frontend/venv/bin/gunicorn -c /etc/bbb-frontend/gunicorn.conf.py bbb_frontend.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target
-
-[Service]
-ExecStart=/home/bbb-frontend/bbb-frontend/venv/bin/python3 manage.py runserver 127.0.0.1:8004
-User=bbb-frontend
-WorkingDirectory=/home/bbb-frontend/bbb-frontend/bbb_frontend/
-Restart=always
-KillSignal=SIGKILL
