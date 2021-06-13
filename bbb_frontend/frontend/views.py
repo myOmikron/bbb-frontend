@@ -4,17 +4,34 @@ import uuid
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.utils.http import urlencode
 from django.views.generic.base import View, TemplateView
 from rc_protocol import validate_checksum
 
+from frontend.consumer import WebsocketConsumer
 from frontend.counter import viewers
 from frontend.models import Channel
 from bbb_common_api.views import PostApiPoint, GetApiPoint
 
 channel_layer = get_channel_layer()
+
+
+class OnPublishView(View):
+
+    def post(self, request, *args, **kwargs):
+        if "name" not in request.POST:
+            return HttpResponse("Bad Request", status=400)
+        try:
+            channel = Channel.objects.get(meeting_id=request.POST["name"])
+        except Channel.DoesNotExist:
+            return HttpResponse("Not valid", status=404)
+
+        # Signal clients to reload
+        WebsocketConsumer.reload_player(channel)
+
+        return HttpResponse("OK", status=200)
 
 
 class ViewerCounts(GetApiPoint):
@@ -45,10 +62,7 @@ class CloseChannelView(PostApiPoint):
     def safe_post(self, request, parameters, *args, **kwargs):
         try:
             channel = Channel.objects.get(meeting_id=parameters["meeting_id"])
-            # async_to_sync(channel_layer.group_send)(channel.meeting_id, {
-            #     "type": "chat.redirect",
-            #     "url": channel.redirect_url
-            # })
+            WebsocketConsumer.redirect(channel)
             channel.delete()
         except Channel.DoesNotExist:
             return JsonResponse(
