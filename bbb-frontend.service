@@ -13,7 +13,7 @@ Group=bbb-frontend
 # see http://0pointer.net/blog/dynamic-users-with-systemd.html
 RuntimeDirectory=gunicorn
 WorkingDirectory=/home/bbb-frontend/bbb-frontend/bbb_frontend/
-ExecStart=/home/bbb-frontend/bbb-frontend/venv/bin/gunicorn -c /etc/bbb-frontend/gunicorn.conf.py bbb_frontend.wsgi
+ExecStart=/home/bbb-frontend/bbb-frontend/venv/bin/gunicorn -c /etc/bbb-frontend/gunicorn.conf.py bbb_frontend.asgi:application
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
 TimeoutStopSec=5
