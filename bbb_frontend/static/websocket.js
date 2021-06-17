@@ -144,6 +144,12 @@ function connectChat(url) {
             }
         }
 
+        function onClear(obj) {
+            for (var i = 0; i < messages.children.length; i++) {
+                messages.removeChild(messages.children[i]);
+            }
+        }
+
         /****************
          * Socket setup *
          ****************/
@@ -164,6 +170,9 @@ function connectChat(url) {
                         break;
                     case "chat.update":
                         onUpdate(event);
+                        break;
+                    case "chat.clear":
+                        onClear(event);
                         break;
                     default:
                         console.error("Chat: Incoming WebSocket json object is of unknown type: '" + event.type + "'");
