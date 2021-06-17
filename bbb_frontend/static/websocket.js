@@ -145,8 +145,8 @@ function connectChat(url) {
         }
 
         function onClear(obj) {
-            for (var i = 0; i < messages.children.length; i++) {
-                messages.removeChild(messages.children[i]);
+            while (messages.children.length > 0) {
+                messages.removeChild(messages.children[0]);
             }
         }
 
